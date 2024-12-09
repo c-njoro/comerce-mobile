@@ -26,13 +26,13 @@ const HorizontalList = ({ title, content }: HorizontalProps) => {
           keyExtractor={(item) => item.text}
           renderItem={({ item }) => (
             <Pressable>
-              <View className="h-36 w-32 rounded-md mr-4 mb-4">
+              <View className="h-24 w-24 rounded-md mr-2 mb-2">
                 <Image
                   source={item.image}
                   resizeMode="cover"
-                  className="w-28 h-28 rounded-full"
+                  className="w-16 h-16 rounded-full"
                 />
-                <Text className="w-full text-center mt-3 capitalize text-gray-700 font-rmono tracking-wide">
+                <Text className="w-full text-left mt-2 capitalize text-gray-700 font-rmono tracking-wide">
                   {item.text}
                 </Text>
               </View>

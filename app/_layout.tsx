@@ -9,7 +9,7 @@ const queryClient = new QueryClient();
 export default function Layout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Slot /> {/* This renders the child routes/pages */}
+      <Slot />
     </QueryClientProvider>
   );
 }

@@ -4,7 +4,6 @@ import axios from "axios";
 const fetchProducts = async () => {
   const response = await axios.get("http://192.168.100.6:3000/api/products");
   const products = response.data;
-  console.log("Products", products);
   return products;
 };
 
