@@ -1,16 +1,9 @@
 import React from "react";
-import {
-  FlatList,
-  Image,
-  ImageSourcePropType,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Image, Pressable, Text, View } from "react-native";
 
 interface HorizontalProps {
   title: string;
-  content: Array<{ image: ImageSourcePropType; text: string }>;
+  content: Array<{ image: string; text: string }>;
 }
 
 const HorizontalList = ({ title, content }: HorizontalProps) => {
@@ -26,11 +19,11 @@ const HorizontalList = ({ title, content }: HorizontalProps) => {
           keyExtractor={(item) => item.text}
           renderItem={({ item }) => (
             <Pressable>
-              <View className="h-24 w-24 rounded-md mr-2 mb-2">
+              <View className="h-28 w-28 rounded-md mr-2 mb-2">
                 <Image
-                  source={item.image}
+                  source={{ uri: item.image }}
                   resizeMode="cover"
-                  className="w-16 h-16 rounded-full"
+                  className="w-20 h-20 rounded-full "
                 />
                 <Text className="w-full text-left mt-2 capitalize text-gray-700 font-rmono tracking-wide">
                   {item.text}

@@ -8,23 +8,24 @@ import HorizontalList from "./HorizontalList";
 const HomePage = () => {
   const categories = [
     {
-      image: require("@/assets/images/profilegithub.jpg"),
+      image: "https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg",
       text: "Electronics",
     },
     {
-      image: require("@/assets/images/profilegithub.jpg"),
+      image: "https://images.pexels.com/photos/248547/pexels-photo-248547.jpeg",
       text: "Sports",
     },
     {
-      image: require("@/assets/images/profilegithub.jpg"),
+      image: "https://images.pexels.com/photos/354103/pexels-photo-354103.jpeg",
       text: "Accessories",
     },
     {
-      image: require("@/assets/images/profilegithub.jpg"),
+      image: "https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg",
       text: "Laptops",
     },
     {
-      image: require("@/assets/images/profilegithub.jpg"),
+      image:
+        "https://images.pexels.com/photos/4523006/pexels-photo-4523006.jpeg",
       text: "Consoles",
     },
   ];
@@ -77,9 +78,13 @@ const HomePage = () => {
                     showsVerticalScrollIndicator={false}
                     numColumns={3}
                     className=""
+                    contentContainerStyle={{
+                      paddingHorizontal: 8,
+                      paddingBottom: 16,
+                    }}
                     renderItem={({ item }) => (
-                      <Pressable className="flex-1 my-4">
-                        <View className="w-32 h-32 ">
+                      <Pressable className="h-full w-full flex-1 my-4 mx-2">
+                        <View className="w-32 h-max ">
                           <Image
                             source={{ uri: `${item.images[0].url}` }}
                             resizeMode="cover"
@@ -87,6 +92,9 @@ const HomePage = () => {
                           ></Image>
                           <Text className="text-gray-700 font-bold mt-1">
                             {item.name}
+                          </Text>
+                          <Text className="font-bold text-gray-900 text-xl pt-2">
+                            Ksh. {item.price}
                           </Text>
                         </View>
                       </Pressable>
