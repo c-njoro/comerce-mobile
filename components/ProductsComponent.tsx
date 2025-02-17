@@ -1,11 +1,18 @@
 import useProducts from "@/hooks/GetProductsHook";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { FlatList, Image, Pressable, Text, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import AppGradient from "./AppGradient";
 import HorizontalList from "./HorizontalList";
 
-const HomePage = () => {
+const ProductsComponent = () => {
   const categories = [
     {
       image: "https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg",
@@ -46,7 +53,7 @@ const HomePage = () => {
   }, [products]);
 
   return (
-    <View className="flex-1">
+    <ScrollView className="flex-1 ">
       <AppGradient colors={["lightblue", "aliceblue"]}>
         <View>
           <View>
@@ -73,6 +80,7 @@ const HomePage = () => {
               filteredProducts.length > 0 ? (
                 <View>
                   <FlatList
+                    scrollEnabled={false}
                     data={products}
                     keyExtractor={(item) => item._id}
                     showsVerticalScrollIndicator={false}
@@ -117,11 +125,13 @@ const HomePage = () => {
             )}
           </View>
         </View>
-
+        <View className="h-2/3">
+          <Text>Test if it is scrolling</Text>
+        </View>
         <StatusBar style="dark" />
       </AppGradient>
-    </View>
+    </ScrollView>
   );
 };
 
-export default HomePage;
+export default ProductsComponent;

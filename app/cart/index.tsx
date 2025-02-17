@@ -1,12 +1,12 @@
 import React from "react";
 import { Text, View } from "react-native";
 
-const Home = () => {
+const Cart = () => {
   return (
-    <View className="flex-1">
-      <Text>Home Page</Text>
+    <View>
+      <Text>Cart Page</Text>
     </View>
   );
 };
 
-export default Home;
+export default Cart;
