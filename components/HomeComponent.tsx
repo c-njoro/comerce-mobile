@@ -5,6 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
+  Image,
   ImageBackground,
   Pressable,
   ScrollView,
@@ -18,6 +19,13 @@ import CardHorizontalList from "./CardHorizontalList";
 import HorizontalList from "./HorizontalList";
 import { Product } from "./Product";
 
+interface BlogInterface {
+  id: Number;
+  title: string;
+  content: string;
+  image: string;
+}
+
 const HomeComponent = () => {
   const {
     data: products,
@@ -25,6 +33,8 @@ const HomeComponent = () => {
     error: productsError,
     refetch: refetchProducts,
   } = useProducts();
+  const blogs: BlogInterface[] = require("../assets/data/blogs.json");
+
   const categories = [
     {
       image: "https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg",
@@ -61,7 +71,7 @@ const HomeComponent = () => {
     }
   }, [products]);
   return (
-    <ScrollView className="flex-1">
+    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       <AppGradient colors={["lightblue", "aliceblue"]}>
         <View className="top-tab flex flex-row justify-between items-center px-5 mt-5">
           <View>
@@ -89,7 +99,7 @@ const HomeComponent = () => {
           </View>
         </View>
 
-        <View className="list-last mt-8 flex-1 px-1">
+        <View className="list-last mt-8 flex-1">
           {lastFive.length < 1 ? (
             <View>
               <Text>Last five not loaded yet</Text>
@@ -157,14 +167,60 @@ const HomeComponent = () => {
           ></CardHorizontalList>
         </View>
 
-        <View className="newArrivals mt-5 ">
+        <View className="recommended mt-8 ">
           <CardHorizontalList
             content={lastFive}
-            title="Recomended For You"
+            title="Recommended For You"
             tailwindHeight="h-72"
             tailwindWidth="w-48"
           ></CardHorizontalList>
         </View>
+
+        {blogs.length < 1 ? (
+          <View>
+            <Text>Blogs not fetched properly</Text>
+          </View>
+        ) : (
+          <View className="my-2 blogs mt-8">
+            <View className="mb-3 flex flex-row justify-between items-center mx-5">
+              <Text className="text-2xl font-bold text-black">Blogs</Text>
+              <Text className="mr-3 text-gray-500">See all</Text>
+            </View>
+            <View className="space-y-2">
+              <FlatList
+                data={blogs}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item: BlogInterface) => item.id.toString()}
+                renderItem={({ item }: { item: BlogInterface }) => (
+                  <Pressable className="mx-5">
+                    <View
+                      className={`h-96 w-96 shadow-lg rounded-2xl drop-shadow-lg overflow-hidden relative flex flex-col justify-start items-start`}
+                    >
+                      <Image
+                        source={{ uri: item.image }}
+                        resizeMode="cover"
+                        className="w-full h-3/4 "
+                      />
+                      <View className="w-full h-1/4 bg-blue-100 p-3">
+                        <Text className="text-gray-400">Expert Advice</Text>
+                        <Text className="font-bold tracking-widest text-xl mt-2">
+                          {item.title}
+                        </Text>
+                      </View>
+                      <Ionicons
+                        name="heart-outline"
+                        color="red"
+                        size={30}
+                        className="absolute top-2 right-2"
+                      />
+                    </View>
+                  </Pressable>
+                )}
+                horizontal
+              ></FlatList>
+            </View>
+          </View>
+        )}
 
         <StatusBar style="dark" />
       </AppGradient>

@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "title": "Which is Better: Wireless vs. Wired Headphones?",
+    "content": "Wireless headphones offer convenience and freedom from tangled cables, making them great for workouts and travel. However, wired headphones provide better audio quality with no latency issues. If you prioritize mobility, go for wireless, but if sound quality is key, wired is the way to go.",
+    "image": "https://images.pexels.com/photos/18542286/pexels-photo-18542286/free-photo-of-earphones-in-black-and-white.jpeg"
+  },
+  {
+    "id": 2,
+    "title": "How to Choose the Best Gaming Laptop?",
+    "content": "When selecting a gaming laptop, consider factors such as GPU power, RAM capacity, refresh rate, and cooling systems. Brands like ASUS, MSI, and Alienware offer high-performance options. Also, ensure it has an SSD for faster load times.",
+    "image": "https://images.pexels.com/photos/19012051/pexels-photo-19012051/free-photo-of-modern-gaming-laptop-and-headphones-on-a-desk.jpeg"
+  },
+  {
+    "id": 3,
+    "title": "Are Smartwatches Worth Buying in 2024?",
+    "content": "Smartwatches have become more advanced, offering health tracking, notifications, and even mobile payments. If you want fitness tracking and instant connectivity, they are a great buy. Popular options include the Apple Watch and Samsung Galaxy Watch.",
+    "image": "https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg"
+  },
+  {
+    "id": 4,
+    "title": "What to Look for When Buying a Smartphone?",
+    "content": "Before purchasing a smartphone, consider display quality, battery life, processor speed, and camera performance. iPhones offer seamless integration, while Android devices provide more customization. Choose based on your needs and budget.",
+    "image": "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg"
+  },
+  {
+    "id": 5,
+    "title": "How to Extend the Battery Life of Your Laptop?",
+    "content": "To improve laptop battery life, reduce screen brightness, close unused apps, and enable battery saver mode. Regularly updating software and avoiding extreme temperatures can also help prolong battery performance.",
+    "image": "https://images.pexels.com/photos/8325381/pexels-photo-8325381.jpeg"
+  }
+]
