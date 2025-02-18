@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Tabs } from "expo-router"; // If using Expo Router
+import { Tabs } from "expo-router";
 import React from "react";
 import "../global.css";
 
@@ -8,6 +8,18 @@ import "../global.css";
 const queryClient = new QueryClient();
 
 export default function Layout() {
+  // const [fontsLoaded] = useFonts({
+  //   Poppins: require("../assets/fonts/Poppins-Regular.ttf"),
+  //   Nunito: require("../assets/fonts/Nunito-Regular.ttf"),
+  // });
+
+  // if (!fontsLoaded) {
+  //   return (
+  //     <View>
+  //       <Text>Loading...</Text>
+  //     </View>
+  //   );
+  // }
   return (
     <QueryClientProvider client={queryClient}>
       <Tabs

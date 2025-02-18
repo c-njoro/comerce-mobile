@@ -6,7 +6,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        rmono: ["Roboto-Mono", "sans-serif"],
+        body: ["Poppins"],
+        heading: ["Nunito"],
       },
     },
   },

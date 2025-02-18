@@ -9,8 +9,9 @@ interface HorizontalProps {
 const HorizontalList = ({ title, content }: HorizontalProps) => {
   return (
     <View className="my-5">
-      <View className="mb-3">
+      <View className="mb-3 flex flex-row justify-between items-center">
         <Text className="text-2xl font-bold text-black">{title}</Text>
+        <Text className="mr-3 text-gray-500">See all</Text>
       </View>
       <View className="space-y-2">
         <FlatList
@@ -18,7 +19,7 @@ const HorizontalList = ({ title, content }: HorizontalProps) => {
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item) => item.text}
           renderItem={({ item }) => (
-            <Pressable>
+            <Pressable className="">
               <View className="h-28 w-28 rounded-md mr-2 mb-2">
                 <Image
                   source={{ uri: item.image }}
