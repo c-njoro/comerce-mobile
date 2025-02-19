@@ -6,6 +6,7 @@ export interface Product {
   images: {
     public_id: string;
     url: string;
+    _id: string;
   }[];
   category: string; // General type for category, without enum
   seller: string;

@@ -1,4 +1,5 @@
 import useProducts from "@/hooks/GetProductsHook";
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import {
@@ -91,7 +92,10 @@ const ProductsComponent = () => {
                       paddingBottom: 16,
                     }}
                     renderItem={({ item }) => (
-                      <Pressable className="h-full w-full flex-1 my-4 mx-2">
+                      <Pressable
+                        onPress={() => router.push(`/products/${item._id}`)}
+                        className="h-full w-full flex-1 my-4 mx-2"
+                      >
                         <View className="w-32 h-max ">
                           <Image
                             source={{ uri: `${item.images[0].url}` }}

@@ -43,13 +43,14 @@ export default function Layout() {
           }}
         />
         <Tabs.Screen
-          name="products/index"
+          name="products"
           options={{
             title: "Products",
             tabBarLabel: "Products",
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="storefront-outline" size={size} color={color} />
             ),
+            href: "/products",
           }}
         />
 
