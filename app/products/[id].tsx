@@ -1,9 +1,10 @@
 import OneProductComponent from "@/components/OneProductComponent";
 import { Product } from "@/components/Product";
+import ProductSkin from "@/components/ProductSkin";
 import axios from "axios";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 const ProductDetails = () => {
   const { id } = useLocalSearchParams();
@@ -28,8 +29,8 @@ const ProductDetails = () => {
 
   if (!currentProduct) {
     return (
-      <View>
-        <Text>Product not fetched yet</Text>
+      <View className="flex-1">
+        <ProductSkin />
       </View>
     );
   }
