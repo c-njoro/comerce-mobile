@@ -1,6 +1,7 @@
 import useProducts from "@/hooks/GetProductsHook";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import {
@@ -27,6 +28,7 @@ interface BlogInterface {
 }
 
 const HomeComponent = () => {
+  const router = useRouter();
   const {
     data: products,
     isLoading: productsLoading,
@@ -101,8 +103,12 @@ const HomeComponent = () => {
 
         <View className="list-last mt-8 flex-1">
           {lastFive.length < 1 ? (
-            <View>
-              <Text>Last five not loaded yet</Text>
+            <View className="w-screen h-max flex flex-col justify-between items-center">
+              <View className="bg-gray-200 w-4/5 h-80 flex flex-col justify-between items-start p-5 rounded-lg opacity-50">
+                <View className="w-1/2 h-1/6 bg-gray-400 rounded-md"></View>
+                <View className="w-full h-1/3 bg-gray-300 rounded-md"></View>
+                <View className="w-1/2 h-1/6 bg-gray-400 rounded-md"></View>
+              </View>
             </View>
           ) : (
             <FlatList
@@ -110,7 +116,10 @@ const HomeComponent = () => {
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item: Product) => item._id}
               renderItem={({ item }: { item: Product }) => (
-                <Pressable className="mx-5">
+                <Pressable
+                  className="mx-5"
+                  onPress={() => router.push(`/products/${item._id}`)}
+                >
                   <View className="h-80 w-96 rounded-2xl drop-shadow-lg mr-2 mb-2 overflow-hidden">
                     <ImageBackground
                       source={{ uri: item.images[0].url }}
@@ -159,21 +168,71 @@ const HomeComponent = () => {
         </View>
 
         <View className="newArrivals mt-5 ">
-          <CardHorizontalList
-            content={newArrivals}
-            title="New Arrivals"
-            tailwindHeight="h-72"
-            tailwindWidth="w-48"
-          ></CardHorizontalList>
+          {newArrivals.length < 1 ? (
+            <View className="flex flex-col justify-start item-start  ">
+              <View className="mb-3 flex flex-row justify-between items-center mx-5">
+                <Text className="text-2xl font-bold text-black">
+                  New Arrivals
+                </Text>
+                <Text className="mr-3 text-gray-500">See all</Text>
+              </View>
+              <View className="flex flex-row justify-start items-center w-screen overflow-hidden">
+                <View className="w-48 h-72  mx-3 opacity-20 rounded-lg">
+                  <View className="h-2/3 w-full bg-gray-500"></View>
+                  <View className="h-1/3 w-full bg-gray-300"></View>
+                </View>
+                <View className="w-48 h-72  mx-3 opacity-20 rounded-lg">
+                  <View className="h-2/3 w-full bg-gray-500"></View>
+                  <View className="h-1/3 w-full bg-gray-300"></View>
+                </View>
+                <View className="w-48 h-72  mx-3 opacity-20 rounded-lg">
+                  <View className="h-2/3 w-full bg-gray-500"></View>
+                  <View className="h-1/3 w-full bg-gray-300"></View>
+                </View>
+              </View>
+            </View>
+          ) : (
+            <CardHorizontalList
+              content={newArrivals}
+              title="New Arrivals"
+              tailwindHeight="h-72"
+              tailwindWidth="w-48"
+            ></CardHorizontalList>
+          )}
         </View>
 
         <View className="recommended mt-8 ">
-          <CardHorizontalList
-            content={lastFive}
-            title="Recommended For You"
-            tailwindHeight="h-72"
-            tailwindWidth="w-48"
-          ></CardHorizontalList>
+          {lastFive.length < 1 ? (
+            <View className="flex flex-col justify-start item-start  ">
+              <View className="mb-3 flex flex-row justify-between items-center mx-5">
+                <Text className="text-2xl font-bold text-black">
+                  New Arrivals
+                </Text>
+                <Text className="mr-3 text-gray-500">See all</Text>
+              </View>
+              <View className="flex flex-row justify-start items-center w-screen overflow-hidden">
+                <View className="w-48 h-72  mx-3 opacity-20 rounded-lg">
+                  <View className="h-2/3 w-full bg-gray-500"></View>
+                  <View className="h-1/3 w-full bg-gray-300"></View>
+                </View>
+                <View className="w-48 h-72  mx-3 opacity-20 rounded-lg">
+                  <View className="h-2/3 w-full bg-gray-500"></View>
+                  <View className="h-1/3 w-full bg-gray-300"></View>
+                </View>
+                <View className="w-48 h-72  mx-3 opacity-20 rounded-lg">
+                  <View className="h-2/3 w-full bg-gray-500"></View>
+                  <View className="h-1/3 w-full bg-gray-300"></View>
+                </View>
+              </View>
+            </View>
+          ) : (
+            <CardHorizontalList
+              content={lastFive}
+              title="Recommended For You"
+              tailwindHeight="h-72"
+              tailwindWidth="w-48"
+            ></CardHorizontalList>
+          )}
         </View>
 
         {blogs.length < 1 ? (

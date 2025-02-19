@@ -54,17 +54,17 @@ const ProductsComponent = () => {
   }, [products]);
 
   return (
-    <ScrollView className="flex-1 ">
+    <ScrollView className="flex-1">
       <AppGradient colors={["lightblue", "aliceblue"]}>
-        <View>
-          <View>
+        <View className="">
+          <View className="pl-5">
             <HorizontalList
               title="Categories"
               content={categories}
             ></HorizontalList>
           </View>
         </View>
-        <View>
+        <View className="pl-5">
           <View>
             <Text className="text-xl text-gray-700 uppercase font-bold tracking-wider">
               {products

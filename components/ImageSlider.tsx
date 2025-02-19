@@ -29,7 +29,7 @@ export default function ImageSlider({ images }: ImageSliderProps) {
   const renderItem: ListRenderItem<ImageType> = ({ item }) => (
     <View
       style={styles.imageContainer}
-      className="rounded-lg overflow-hidden mt-8"
+      className="rounded-lg overflow-hidden mt-8 shadow-md"
     >
       <Image
         source={{ uri: item.url }}

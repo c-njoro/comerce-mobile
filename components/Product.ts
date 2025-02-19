@@ -1,5 +1,5 @@
 export interface Product {
-  _id: string; // Optional, since MongoDB auto-generates it
+  _id: string;
   name: string;
   description: string;
   price: number;
@@ -8,7 +8,7 @@ export interface Product {
     url: string;
     _id: string;
   }[];
-  category: string; // General type for category, without enum
+  category: string;
   seller: string;
   stock: number;
   ratings: number;

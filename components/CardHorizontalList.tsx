@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React from "react";
 import {
   FlatList,
@@ -35,7 +36,10 @@ const CardHorizontalList = ({
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item: Product) => item._id}
           renderItem={({ item }: { item: Product }) => (
-            <Pressable className="mx-5">
+            <Pressable
+              className="mx-3"
+              onPress={() => router.push(`/products/${item._id}`)}
+            >
               <View
                 className={`${tailwindHeight} ${tailwindWidth} shadow-lg rounded-2xl drop-shadow-lg overflow-hidden relative flex flex-col justify-start items-start`}
               >
