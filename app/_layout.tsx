@@ -27,7 +27,7 @@ function RootLayoutNav() {
           options={{
             title: "Home",
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="home" size={size} color={color} />
+              <Ionicons name="home-outline" size={size} color={color} />
             ),
           }}
         />
@@ -36,7 +36,7 @@ function RootLayoutNav() {
           options={{
             title: "Products",
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="storefront-outline" size={size} color={color} />
+              <Ionicons name="cube-outline" size={size} color={color} />
             ),
           }}
         />
