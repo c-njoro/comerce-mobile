@@ -57,7 +57,6 @@ const ProfilePageComponent = () => {
             {user.name}
           </Text>
           <View className="w-full flex flex-row justify-start items-center mb-8">
-            {" "}
             <Ionicons
               name="mail-outline"
               size={20}
