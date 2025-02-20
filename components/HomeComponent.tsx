@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import useProducts from "@/hooks/GetProductsHook";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -29,6 +30,7 @@ interface BlogInterface {
 
 const HomeComponent = () => {
   const router = useRouter();
+  const { isLoggedIn, user } = useAuth();
   const {
     data: products,
     isLoading: productsLoading,
@@ -76,14 +78,26 @@ const HomeComponent = () => {
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       <AppGradient colors={["lightblue", "aliceblue"]}>
         <View className="top-tab flex flex-row justify-between items-center px-5 mt-5">
-          <View>
-            <Text className="font-semibold tracking-wider text-gray-500">
-              Welcome back,
-            </Text>
-            <Text className="font-bold text-2xl tracking-widest text-gray-600">
-              Charles.
-            </Text>
-          </View>
+          {isLoggedIn ? (
+            <View>
+              <Text className="font-semibold tracking-wider text-gray-500">
+                Welcome back,
+              </Text>
+              <Text className="font-bold text-2xl tracking-widest text-gray-600">
+                {user.username}
+              </Text>
+            </View>
+          ) : (
+            <View>
+              <Text className="font-semibold tracking-wider text-gray-500">
+                Hello visitor,
+              </Text>
+              <Pressable className="mt-2" onPress={() => router.push("/login")}>
+                <Text>Login / Sign Up</Text>
+              </Pressable>
+            </View>
+          )}
+
           <View className="relative flex flex-row justify-end items-center">
             <TextInput
               className={`bg-gray-300 ${
