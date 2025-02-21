@@ -1,9 +1,10 @@
 import { useAuth } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import { router } from "expo-router";
+import { router, useSegments } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
+import Toast from "react-native-toast-message";
 import AppGradient from "./AppGradient";
 import { Product } from "./Product";
 
@@ -87,15 +88,16 @@ const CartPageComponent = () => {
   }
 
   //this to happen if user is there
-
+  const segments = useSegments();
   const [cartLoading, setCartLoading] = useState(true);
   const [cart, setCart] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
   const [counts, setCounts] = useState<ProductMap>({});
+  const [currentIds, setCurrenIds] = useState<StringArray>([]);
 
   useEffect(() => {
     fetchUserCart();
-  }, []);
+  }, [segments]);
 
   const fetchUserCart = async () => {
     try {
@@ -106,11 +108,12 @@ const CartPageComponent = () => {
 
       const completeUser = response.data;
       const productIds: StringArray = completeUser.favoriteProducts;
-      console.log("ProductIds: ", productIds);
+      setCurrenIds(productIds);
 
       if (productIds.length > 0) {
         fetchCartProducts(productIds);
       } else {
+        setCart([]);
         setCartLoading(false);
       }
     } catch (error: any) {
@@ -180,6 +183,75 @@ const CartPageComponent = () => {
     }
   }, [cart]);
 
+  const reduceCount = async (id: string) => {
+    try {
+      let count = 0;
+      const cartP = currentIds;
+
+      for (let num of cartP) {
+        if (num === id) {
+          count++;
+        }
+      }
+
+      if (count <= 1) {
+        Toast.show({
+          type: "info",
+          text1: "Only one count remaining",
+          text2: "Cannot reduce 1, either delete the item.",
+          visibilityTime: 3000,
+          position: "bottom",
+          text1Style: { fontSize: 18, fontWeight: "bold" },
+          text2Style: { fontSize: 14, color: "gray" },
+        });
+        return;
+      }
+
+      await axios.post(`http://192.168.100.6:5000/api/users/reduceFavorite`, {
+        email: user.email,
+        id,
+      });
+      fetchUserCart();
+    } catch (error) {
+      console.log("Error: " + error);
+    }
+  };
+
+  const increaseCount = async (id: string) => {
+    try {
+      await axios.put(`http://192.168.100.6:5000/api/users/increaseFavorite`, {
+        email: user.email,
+        id,
+      });
+      fetchUserCart();
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  };
+
+  const removeProduct = async (id: string) => {
+    try {
+      await axios.post(`http://192.168.100.6:5000/api/users/removeFavorite`, {
+        email: user.email,
+        id,
+      });
+
+      Toast.show({
+        type: "info",
+        text1: "Deleted from your cart",
+        text2: "Product has been completely removed from your cart",
+        visibilityTime: 3000,
+        position: "bottom",
+        text1Style: { fontSize: 18, fontWeight: "bold" },
+        text2Style: { fontSize: 14, color: "gray" },
+      });
+
+      fetchUserCart();
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  };
+
   if (cartLoading) {
     return (
       <ScrollView className="relative w-screen h-max">
@@ -222,10 +294,60 @@ const CartPageComponent = () => {
             </Text>
           </View>
           {cart.length > 0 ? (
-            <View>
+            <View className="w-full h-max flex flex-col justify-start items-start gap-3 mt-12 px-5">
               {Object.values(counts).map((pr) => (
-                <View key={pr._id}>
-                  <Text>{pr.name}</Text>
+                <View
+                  key={pr._id}
+                  className="bg-blue-50 h-max w-full flex flex-row justify-start items-start px-2 py-3 gap-2 rounded-lg shadow-md"
+                >
+                  <Toast />
+                  <Image
+                    source={{ uri: pr.images[0].url }}
+                    resizeMode="cover"
+                    className="h-full min-h-32 w-1/4 rounded-md shadow-md"
+                  ></Image>
+
+                  <View className="w-3/4 h-max flex flex-col justify-start items-start">
+                    <View className="name-delete flex w-full flex-row justify-between items-center px-2 gap-5">
+                      <Text className="font-bold text-2xl tracking-widest text-gray-600">
+                        {pr.name}
+                      </Text>
+                      <Ionicons
+                        name="trash-outline"
+                        size={20}
+                        color={`red`}
+                        onPress={() => removeProduct(pr._id)}
+                      />
+                    </View>
+                    <Text className="text-gray-400 font-bold text-xl tracking-widest mt-4 px-2">
+                      @Ksh.{pr.price}
+                    </Text>
+
+                    <View className="flex flex-row-reverse w-full justify-between px-2">
+                      <View className="flex flex-row gap-5 justify-start items-center">
+                        <Ionicons
+                          name="remove-outline"
+                          size={30}
+                          color={`red`}
+                          className="bg-blue-100 rounded-lg shadow-md"
+                          onPress={() => reduceCount(pr._id)}
+                        />
+                        <Text>{pr.count}</Text>
+                        <Ionicons
+                          name="add-outline"
+                          size={30}
+                          color={`green`}
+                          className="bg-blue-100 rounded-lg shadow-md"
+                          onPress={() => increaseCount(pr._id)}
+                        />
+                      </View>
+                      <View className="flex flex-row justify-start items-center">
+                        <Text className="font-bold tracking-widest ">
+                          Total Ksh.{(pr.price * pr.count).toFixed(2)}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
                 </View>
               ))}
             </View>
