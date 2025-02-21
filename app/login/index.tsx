@@ -88,7 +88,9 @@ export default function LoginScreen() {
         return;
       }
       await login(email, password);
-      router.replace("/"); // Navigate to home screen after login
+      router.back();
+      setEmail("");
+      setPassword("");
     } catch (error: any) {
       Alert.alert("Login Failed", "Wrong Credentials");
     }

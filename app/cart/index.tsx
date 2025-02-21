@@ -1,10 +1,11 @@
+import CartPageComponent from "@/components/CartPageComponent";
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 const Cart = () => {
   return (
-    <View>
-      <Text>Cart Page</Text>
+    <View className="flex-1">
+      <CartPageComponent />
     </View>
   );
 };
