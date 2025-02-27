@@ -265,7 +265,10 @@ const HomeComponent = () => {
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item: BlogInterface) => item.id.toString()}
                 renderItem={({ item }: { item: BlogInterface }) => (
-                  <Pressable className="mx-5">
+                  <Pressable
+                    className="mx-5"
+                    onPress={() => router.push(`/blog/${item.id}`)}
+                  >
                     <View
                       className={`h-96 w-96 shadow-lg rounded-2xl drop-shadow-lg overflow-hidden relative flex flex-col justify-start items-start`}
                     >

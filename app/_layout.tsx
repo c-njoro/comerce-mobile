@@ -69,6 +69,17 @@ function RootLayoutNav() {
             href: null,
           }}
         />
+
+        <Tabs.Screen
+          name="blog/[id]"
+          options={{
+            title: "Blog",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="person" size={size} color={color} />
+            ),
+            href: null,
+          }}
+        />
       </Tabs>
     </QueryClientProvider>
   );

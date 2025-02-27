@@ -69,7 +69,7 @@ export default function LoginScreen() {
       Alert.alert(
         "SignUp Failed",
         `Something went wrong while creating your account.${
-          error.response.status === 400
+          error.response.status === 422
             ? "Username already taken"
             : error.response.status === 409
             ? "Email already has an account"
