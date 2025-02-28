@@ -3,7 +3,16 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { router, useSegments } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import Toast from "react-native-toast-message";
 import AppGradient from "./AppGradient";
 import { Product } from "./Product";
@@ -35,6 +44,14 @@ interface ProductUpdate {
 
 interface ProductMap {
   [productId: string]: ProductUpdate;
+}
+
+interface refinedProducts {
+  productId: String;
+  productName: String;
+  quantity: Number;
+  unitPrice: Number;
+  totalPrice: Number;
 }
 
 const CartPageComponent = () => {
@@ -94,6 +111,7 @@ const CartPageComponent = () => {
   const [total, setTotal] = useState(0);
   const [counts, setCounts] = useState<ProductMap>({});
   const [currentIds, setCurrenIds] = useState<StringArray>([]);
+  const [checkOut, setCheckOut] = useState(false);
 
   useEffect(() => {
     fetchUserCart();
@@ -212,6 +230,7 @@ const CartPageComponent = () => {
         id,
       });
       fetchUserCart();
+      setOrderProducts([]);
     } catch (error) {
       console.log("Error: " + error);
     }
@@ -224,6 +243,7 @@ const CartPageComponent = () => {
         id,
       });
       fetchUserCart();
+      setOrderProducts([]);
     } catch (error) {
       console.log("Error: ", error);
     }
@@ -245,13 +265,121 @@ const CartPageComponent = () => {
         text1Style: { fontSize: 18, fontWeight: "bold" },
         text2Style: { fontSize: 14, color: "gray" },
       });
-
+      setOrderProducts([]);
       fetchUserCart();
     } catch (error) {
       console.log("Error: ", error);
     }
   };
 
+  //making order stuff
+  const [orderProducts, setOrderProducts] = useState<refinedProducts[]>([]);
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [shippingMethod, setShippingMethod] = useState("");
+  const [note, setNote] = useState("");
+
+  const createProducts = () => {
+    Object.values(counts).map((co) => {
+      setOrderProducts((previousState) => [
+        ...previousState,
+        {
+          productId: co._id,
+          productName: co.name,
+          quantity: co.count,
+          unitPrice: co.price,
+          totalPrice: co.price * co.count,
+        },
+      ]);
+    });
+  };
+
+  const clearCart = async () => {
+    try {
+      const order = await axios.put(
+        `http://192.168.100.6:5000/api/users/update/${user._id}`,
+        {
+          favoriteProducts: [],
+        }
+      );
+      console.log("Cart cleared after making order!");
+      fetchUserCart();
+    } catch (error) {
+      Alert.alert(
+        "Order was created but cart not cleared!!!",
+        "There was an error while crearing the cart."
+      );
+    }
+  };
+
+  const submitOrder = async () => {
+    if (
+      !shippingAddress.trim() ||
+      !phoneNumber.trim() ||
+      !paymentMethod.trim() ||
+      !shippingMethod.trim() ||
+      !note.trim()
+    ) {
+      Alert.alert(
+        "Some data is missing!!!",
+        "Ensure you have filled the form correctly"
+      );
+      return;
+    }
+
+    if (orderProducts.length < 1) {
+      Alert.alert(
+        "Seems products are not confirmed!!",
+        "Go back to cart and press checkout then confirm again"
+      );
+      return;
+    }
+
+    try {
+      const order = await axios.post(`http://192.168.100.6:5000/api/orders`, {
+        customerId: user._id,
+        shippingAddress: shippingAddress,
+        contactInfo: {
+          phone: phoneNumber,
+          email: user.email,
+        },
+        paymentMethod: paymentMethod,
+        transactionId: "TEST_ID",
+        totalAmount: total,
+        products: orderProducts,
+        shippingMethod: shippingMethod,
+        shippingCost: 5,
+        taxRate: 0.123,
+        taxAmount: 10.08,
+        orderNotes: note,
+        internalNotes: "New customer, verify address first.",
+      });
+
+      setOrderProducts([]);
+      setShippingAddress("");
+      setShippingMethod("");
+      setPhoneNumber("");
+      setNote("");
+      setPaymentMethod("");
+      setCheckOut(false);
+
+      Alert.alert(
+        "Your Order was places successfuly",
+        "Track your order from the orders page, visit profile to see the orders page."
+      );
+      clearCart();
+      router.push("/");
+    } catch (error) {
+      Alert.alert(
+        "There was an error creating your order!!!",
+        "The server ran to an error while creating the order. Please try again."
+      );
+      console.log("Error placing order", error);
+    }
+  };
+
+  //this is when the cart is loading
   if (cartLoading) {
     return (
       <ScrollView className="relative w-screen h-max">
@@ -269,8 +397,8 @@ const CartPageComponent = () => {
               </Text>
             </View>
 
-            <View>
-              <Text>Loading cart ...</Text>
+            <View className="w-screen">
+              <Text className="w-full text-center mt-12">Loading cart ...</Text>
             </View>
           </View>
         </AppGradient>
@@ -278,6 +406,184 @@ const CartPageComponent = () => {
     );
   }
 
+  //when cart is loaded and user wants to checkout
+
+  if (checkOut) {
+    return (
+      <ScrollView className="relative w-screen h-max">
+        <AppGradient colors={["lightblue", "aliceblue"]}>
+          <View className="mt-5 flex-1 w-screen min-h-screen relative">
+            <View className="flex w-full h-max flex-row justify-between items-center px-5 fixed">
+              <Ionicons
+                name="arrow-back"
+                size={30}
+                color="black"
+                onPress={() => setCheckOut(false)}
+              />
+              <Text className="text-3xl font-bold tracking-widest text-gray-800">
+                Check Out
+              </Text>
+            </View>
+
+            {cart.length > 0 ? (
+              <View className="w-screen flex flex-col justify-start items-start gap-3 mt-5 px-5">
+                <View className="w-full flex flex-row justify-between items-center">
+                  <Text className="font-bold text-xl text-gray-500">Item</Text>
+                  <Text className="font-bold text-xl text-gray-500">
+                    Quantity
+                  </Text>
+                  <Text className="font-bold text-xl text-gray-500">Total</Text>
+                </View>
+                {Object.values(counts).map((pr) => (
+                  <View
+                    className="w-full flex flex-row justify-between items-center"
+                    key={pr._id}
+                  >
+                    <Text className="font-bold  text-gray-700 w-1/3 text-start text-wrap">
+                      {pr.name}
+                    </Text>
+                    <Text className="font-bold  text-gray-700 w-1/3 text-center">
+                      {pr.count}
+                    </Text>
+                    <Text className="font-bold  text-gray-700 w-1/3 text-right">
+                      {(pr.price * pr.count).toFixed(2)}
+                    </Text>
+                  </View>
+                ))}
+
+                <View className="w-full flex flex-row justify-end items-center mt-2">
+                  <Text className="font-bold tracking-wider text-xl text-green-800">
+                    Ksh. {total}
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <View className="w-full h-max mt-12 flex flex-col justify-center items-center">
+                <Text className="font-bold text-xl text-gray-500">
+                  No Items to Checkout, Add some items to cart
+                </Text>
+              </View>
+            )}
+
+            {orderProducts.length < 1 ? (
+              <View className="w-screen h-max">
+                <Pressable
+                  className="flex flex-row justify-center items-center w-full py-5 rounded-full bg-blue-100"
+                  onPress={createProducts}
+                >
+                  <Text>Confirm Product(s)</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <View className="w-full px-5 flex flex-col justify-start items-start gap-3 mt-8">
+                <View className="w-full flex flex-row justify-center items-center">
+                  <Text className="font-bold tracking-widest text-xl text-gray-600">
+                    Fill In To Order
+                  </Text>
+                </View>
+                <View className="w-full h-max flex flex-col justify-start items-start gap-2">
+                  <Text>Shipping Address</Text>
+                  <TextInput
+                    className="bg-gray-100 pl-8  shadow-md h-14  mb-4 w-full"
+                    placeholder="Shipping Address"
+                    value={shippingAddress}
+                    onChangeText={setShippingAddress}
+                    autoCapitalize="none"
+                  />
+                </View>
+                <View className="w-full h-max flex flex-col justify-start items-start gap-2">
+                  <Text>Phone Number</Text>
+                  <TextInput
+                    className="bg-gray-100 pl-8  shadow-md h-14  mb-4 w-full"
+                    placeholder="Phone number..."
+                    value={phoneNumber}
+                    onChangeText={setPhoneNumber}
+                    autoCapitalize="none"
+                  />
+                </View>
+                <View className="w-full h-max flex flex-col justify-start items-start gap-2">
+                  <Text>Payment Method</Text>
+                  <View className="w-full flex flex-row justify-between items-center gap-3">
+                    <Pressable
+                      className={`w-1/2 flex flex-row justify-center items-center py-3 ${
+                        paymentMethod === "mpesa"
+                          ? "bg-green-500"
+                          : "bg-gray-100"
+                      }`}
+                      onPress={() => setPaymentMethod("mpesa")}
+                    >
+                      <Text>M-Pesa</Text>
+                    </Pressable>
+                    <Pressable
+                      className={`w-1/2 flex flex-row justify-center items-center py-3 ${
+                        paymentMethod === "onDelivery"
+                          ? "bg-green-500"
+                          : "bg-gray-100"
+                      }`}
+                      onPress={() => setPaymentMethod("onDelivery")}
+                    >
+                      <Text>Pay On Delivery</Text>
+                    </Pressable>
+                  </View>
+                </View>
+                <View className="w-full h-max flex flex-col justify-start items-start gap-2">
+                  <Text>Shipping Method</Text>
+                  <View className="w-full flex flex-row justify-between items-center gap-3">
+                    <Pressable
+                      className={`w-1/2 flex flex-row justify-center items-center py-3 ${
+                        shippingMethod ===
+                        "To be delivered at your home address"
+                          ? "bg-green-500"
+                          : "bg-gray-100"
+                      }`}
+                      onPress={() =>
+                        setShippingMethod(
+                          "To be delivered at your home address"
+                        )
+                      }
+                    >
+                      <Text>Door Delivery</Text>
+                    </Pressable>
+                    <Pressable
+                      className={`w-1/2 flex flex-row justify-center items-center py-3 ${
+                        shippingMethod === "To be collected at pickup station"
+                          ? "bg-green-500"
+                          : "bg-gray-100"
+                      }`}
+                      onPress={() =>
+                        setShippingMethod("To be collected at pickup station")
+                      }
+                    >
+                      <Text>Pick Up Station</Text>
+                    </Pressable>
+                  </View>
+                </View>
+                <View className="w-full h-max flex flex-col justify-start items-start gap-2">
+                  <Text>Note for delivery personnel</Text>
+                  <TextInput
+                    className="bg-gray-100 pl-8  shadow-md h-14  mb-4 w-full"
+                    placeholder="Note.."
+                    value={note}
+                    onChangeText={setNote}
+                    autoCapitalize="none"
+                  />
+                </View>
+
+                <Pressable
+                  className="w-full h-max py-5 bg-blue-200 rounded-md shadow-md flex flex-row justify-center items-center"
+                  onPress={submitOrder}
+                >
+                  <Text>Make Order</Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
+        </AppGradient>
+      </ScrollView>
+    );
+  }
+
+  //this displays the cart items now that all ifs are not met
   return (
     <ScrollView className="relative w-screen h-max">
       <AppGradient colors={["lightblue", "aliceblue"]}>
@@ -350,10 +656,25 @@ const CartPageComponent = () => {
                   </View>
                 </View>
               ))}
+
+              <View className="w-full h-max flex flex-row justify-between items-center">
+                <Pressable
+                  className="bg-green-200 p-3 rounded-md flex flex-row justify-center items-center"
+                  onPress={() => setCheckOut(true)}
+                >
+                  <Text>Check Out</Text>
+                </Pressable>
+
+                <Text className="tracking-wide font-bold text-green-700 text-xl">
+                  Total: {total}
+                </Text>
+              </View>
             </View>
           ) : (
-            <View>
-              <Text>Your cart is empty</Text>
+            <View className="w-full h-max mt-12">
+              <Text className="w-full text-center fonr-bold tracking-widest text-xl text-gray-600">
+                Your cart is empty
+              </Text>
             </View>
           )}
         </View>
@@ -361,5 +682,10 @@ const CartPageComponent = () => {
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { margin: 10 },
+  picker: { height: 50, width: "100%" },
+});
 
 export default CartPageComponent;

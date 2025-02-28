@@ -4,6 +4,7 @@ import axios from "axios";
 import { router } from "expo-router";
 import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import { runOnJS } from "react-native-reanimated";
 import Toast from "react-native-toast-message";
 import AppGradient from "./AppGradient";
 import ImageSlider from "./ImageSlider";
@@ -23,15 +24,19 @@ const OneProductComponent: React.FC<OneProductComponentProps> = ({ data }) => {
   const { isLoggedIn, user } = useAuth();
 
   const addToCart = async (objectId: string) => {
+    console.log("Add cart clicked");
     if (!isLoggedIn) {
-      Toast.show({
-        type: "info",
-        text1: "You have to login to use cart.",
-        text2: "Click on the profile icon and login .",
-        visibilityTime: 3000,
-        position: "bottom",
-        text1Style: { fontSize: 18, fontWeight: "bold" },
-        text2Style: { fontSize: 14, color: "gray" },
+      console.log("Login first");
+      runOnJS(() => {
+        Toast.show({
+          type: "info",
+          text1: "You have to login to use cart.",
+          text2: "Click on the profile icon and login .",
+          visibilityTime: 3000,
+          position: "bottom",
+          text1Style: { fontSize: 18, fontWeight: "bold" },
+          text2Style: { fontSize: 14, color: "gray" },
+        });
       });
 
       return;
@@ -44,35 +49,33 @@ const OneProductComponent: React.FC<OneProductComponentProps> = ({ data }) => {
           id: objectId,
         }
       );
-      Toast.show({
-        type: "success",
-        text1: "Added to Cart!",
-        text2: "Check your cart for details.",
-        visibilityTime: 3000,
-        position: "bottom",
-        text1Style: { fontSize: 18, fontWeight: "bold" },
-        text2Style: { fontSize: 14, color: "gray" },
-      });
-    } catch (error: any) {
-      if (error.response.status == 408) {
+      console.log("added to cart");
+      runOnJS(() => {
         Toast.show({
-          type: "info",
-          text1: "Item already in cart",
+          type: "success",
+          text1: "Added to Cart!",
           text2: "Check your cart for details.",
           visibilityTime: 3000,
           position: "bottom",
           text1Style: { fontSize: 18, fontWeight: "bold" },
           text2Style: { fontSize: 14, color: "gray" },
         });
+      });
+    } catch (error: any) {
+      if (error.response.status == 408) {
+        console.log("Item already in cart");
       } else {
-        Toast.show({
-          type: "error",
-          text1: "There was an error in adding item.",
-          text2: "Please try again!",
-          visibilityTime: 3000,
-          position: "bottom",
-          text1Style: { fontSize: 18, fontWeight: "bold" },
-          text2Style: { fontSize: 14, color: "gray" },
+        console.log("Error while adding to cart");
+        runOnJS(() => {
+          Toast.show({
+            type: "error",
+            text1: "There was an error in adding item.",
+            text2: "Please try again!",
+            visibilityTime: 3000,
+            position: "bottom",
+            text1Style: { fontSize: 18, fontWeight: "bold" },
+            text2Style: { fontSize: 14, color: "gray" },
+          });
         });
 
         console.log(error);
