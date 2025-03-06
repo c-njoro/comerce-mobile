@@ -50,6 +50,16 @@ function RootLayoutNav() {
           }}
         />
         <Tabs.Screen
+          name="orders/index"
+          options={{
+            title: "Orders",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="receipt-outline" size={size} color={color} />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
           name="profile"
           options={{
             title: "Profile",
