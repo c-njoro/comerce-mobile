@@ -2,8 +2,15 @@ import { useAuth } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { router } from "expo-router";
-import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import React, { useState } from "react";
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { runOnJS } from "react-native-reanimated";
 import Toast from "react-native-toast-message";
 import AppGradient from "./AppGradient";
@@ -22,6 +29,8 @@ interface ImageType {
 
 const OneProductComponent: React.FC<OneProductComponentProps> = ({ data }) => {
   const { isLoggedIn, user } = useAuth();
+  const [ordering, setOrdering] = useState(false);
+  const toggleOrdering = () => setOrdering(!ordering);
 
   const addToCart = async (objectId: string) => {
     console.log("Add cart clicked");
@@ -82,6 +91,82 @@ const OneProductComponent: React.FC<OneProductComponentProps> = ({ data }) => {
       }
     }
   };
+
+  //making order stuff
+
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [shippingMethod, setShippingMethod] = useState("");
+  const [note, setNote] = useState("");
+  const [quantity, setQuantity] = useState(0);
+
+  const submitOrder = async () => {
+    if (
+      !shippingAddress.trim() ||
+      !phoneNumber.trim() ||
+      !paymentMethod.trim() ||
+      !shippingMethod.trim() ||
+      !note.trim() ||
+      quantity === 0
+    ) {
+      Alert.alert(
+        "Some data is missing!!!",
+        "Ensure you have filled the form correctly"
+      );
+      return;
+    }
+
+    try {
+      const order = await axios.post(`http://192.168.100.6:5000/api/orders`, {
+        customerId: user._id,
+        shippingAddress: shippingAddress,
+        contactInfo: {
+          phone: phoneNumber,
+          email: user.email,
+        },
+        paymentMethod: paymentMethod,
+        transactionId: "TEST_ID",
+        totalAmount: data.price * quantity,
+        products: [
+          {
+            productId: data._id,
+            quantity: quantity,
+            productName: data.name,
+            unitPrice: data.price,
+            totalPrice: data.price * quantity,
+          },
+        ],
+        shippingMethod: shippingMethod,
+        shippingCost: 5,
+        taxRate: 0.123,
+        taxAmount: 10.08,
+        orderNotes: note,
+        internalNotes: "New customer, verify address first.",
+      });
+
+      setShippingAddress("");
+      setShippingMethod("");
+      setPhoneNumber("");
+      setNote("");
+      setPaymentMethod("");
+      setQuantity(0);
+
+      Alert.alert(
+        "Your Order was places successfully",
+        "Track your order from the orders page, visit profile to see the orders page."
+      );
+
+      toggleOrdering();
+    } catch (error) {
+      Alert.alert(
+        "There was an error creating your order!!!",
+        "The server ran to an error while creating the order. Please try again."
+      );
+      console.log("Error placing order", error);
+    }
+  };
+
   return (
     <ScrollView className="flex-1">
       <AppGradient colors={["lightblue", "aliceblue"]}>
@@ -97,7 +182,11 @@ const OneProductComponent: React.FC<OneProductComponentProps> = ({ data }) => {
         <View className="flex-1">
           <ImageSlider images={data.images} />
         </View>
-        <View className="details flex-1 flex-col gap-2 justify-start items-start mt-5 p-5">
+        <View
+          className={`details flex-1 flex-col gap-2 justify-start items-start mt-5 p-5 ${
+            ordering ? "hidden" : ""
+          }`}
+        >
           <Text className="text-gray-500 uppercase text-sm tracking-wider">
             {data.category}
           </Text>
@@ -167,13 +256,130 @@ const OneProductComponent: React.FC<OneProductComponentProps> = ({ data }) => {
                 onPress={() => addToCart(data._id)}
               />
             </View>
-            <Pressable className="w-4/5 py-4 flex flex-col justify-center items-center rounded-lg shadow-md bg-green-500">
+            <Pressable
+              onPress={toggleOrdering}
+              className="w-4/5 py-4 flex flex-col justify-center items-center rounded-lg shadow-md bg-green-500"
+            >
               <Text className="font-bold text-xl tracking-wider text-gray-700">
                 Buy Now
               </Text>
             </Pressable>
             <Toast />
           </View>
+        </View>
+        <View
+          className={`${
+            ordering ? "" : "hidden"
+          } flex-1 flex-col gap-2 justify-start items-start mt-5 p-5`}
+        >
+          <View className="w-full flex flex-row justify-end items-center">
+            <Pressable
+              onPress={toggleOrdering}
+              className="w-1/2 py-3 bg-red-200 rounded-md shadow-md flex flex-row justify-center items-center"
+            >
+              <Text>Quit Order</Text>
+            </Pressable>
+          </View>
+          <View className="w-full h-max flex flex-col justify-start items-start gap-2">
+            <Text>Quantity</Text>
+            <TextInput
+              className="bg-gray-100 pl-8 shadow-md h-14 mb-4 w-full"
+              placeholder="Enter quantity"
+              value={quantity.toString()} // Convert number to string for TextInput
+              onChangeText={(text) => setQuantity(Number(text))} // Convert string back to number
+              keyboardType="numeric" // Restrict input to numeric values
+              autoCapitalize="none"
+            />
+          </View>
+          <View className="w-full h-max flex flex-col justify-start items-start gap-2">
+            <Text>Shipping Address</Text>
+            <TextInput
+              className="bg-gray-100 pl-8  shadow-md h-14  mb-4 w-full"
+              placeholder="Shipping Address"
+              value={shippingAddress}
+              onChangeText={setShippingAddress}
+              autoCapitalize="none"
+            />
+          </View>
+          <View className="w-full h-max flex flex-col justify-start items-start gap-2">
+            <Text>Phone Number</Text>
+            <TextInput
+              className="bg-gray-100 pl-8  shadow-md h-14  mb-4 w-full"
+              placeholder="Phone number..."
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              autoCapitalize="none"
+            />
+          </View>
+          <View className="w-full h-max flex flex-col justify-start items-start gap-2">
+            <Text>Payment Method</Text>
+            <View className="w-full flex flex-row justify-between items-center gap-3">
+              <Pressable
+                className={`w-1/2 flex flex-row justify-center items-center py-3 ${
+                  paymentMethod === "mpesa" ? "bg-green-500" : "bg-gray-100"
+                }`}
+                onPress={() => setPaymentMethod("mpesa")}
+              >
+                <Text>M-Pesa</Text>
+              </Pressable>
+              <Pressable
+                className={`w-1/2 flex flex-row justify-center items-center py-3 ${
+                  paymentMethod === "onDelivery"
+                    ? "bg-green-500"
+                    : "bg-gray-100"
+                }`}
+                onPress={() => setPaymentMethod("onDelivery")}
+              >
+                <Text>Pay On Delivery</Text>
+              </Pressable>
+            </View>
+          </View>
+          <View className="w-full h-max flex flex-col justify-start items-start gap-2">
+            <Text>Shipping Method</Text>
+            <View className="w-full flex flex-row justify-between items-center gap-3">
+              <Pressable
+                className={`w-1/2 flex flex-row justify-center items-center py-3 ${
+                  shippingMethod === "To be delivered at your home address"
+                    ? "bg-green-500"
+                    : "bg-gray-100"
+                }`}
+                onPress={() =>
+                  setShippingMethod("To be delivered at your home address")
+                }
+              >
+                <Text>Door Delivery</Text>
+              </Pressable>
+              <Pressable
+                className={`w-1/2 flex flex-row justify-center items-center py-3 ${
+                  shippingMethod === "To be collected at pickup station"
+                    ? "bg-green-500"
+                    : "bg-gray-100"
+                }`}
+                onPress={() =>
+                  setShippingMethod("To be collected at pickup station")
+                }
+              >
+                <Text>Pick Up Station</Text>
+              </Pressable>
+            </View>
+          </View>
+          <View className="w-full h-max flex flex-col justify-start items-start gap-2">
+            <Text>Note for delivery personnel</Text>
+            <TextInput
+              className="bg-gray-100 pl-8  shadow-md h-14  mb-4 w-full"
+              placeholder="Note.."
+              value={note}
+              onChangeText={setNote}
+              autoCapitalize="none"
+            />
+          </View>
+
+          <Pressable
+            className="w-full h-max py-5 bg-blue-200 rounded-md shadow-md flex flex-row justify-center items-center"
+            onPress={submitOrder}
+          >
+            <Text>Make Order</Text>
+          </Pressable>
         </View>
       </AppGradient>
     </ScrollView>
